@@ -175,13 +175,19 @@ body.dark .option.selected {
     }
 }
 
-body.dark #category {
+
+body.dark input,
+body.dark select {
     background: var(--surface);
     color: var(--text);
     border-color: var(--border);
 }
 
-body.dark #category option {
+body.dark input::placeholder {
+    color: #8f9aaa;
+}
+
+body.dark select option {
     background: #151b24;
     color: #eef2f7;
 }
