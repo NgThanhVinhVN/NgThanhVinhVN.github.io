@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>TRUY TÌM KHO BÁU LỊCH SỬ</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div id="app">
+  <header class="topbar">
+    <div class="logo">
+      <div class="badge">🗺️</div>
+      <div>
+        <h1>TRUY TÌM KHO BÁU LỊCH SỬ</h1>
+        <small>LỊCH SỬ ĐẢNG CỘNG SẢN VIỆT NAM</small>
+      </div>
+    </div>
+    <div class="spacer"></div>
+    <div class="phase-chip" id="phaseChip">GIAI ĐOẠN 1 · KHỞI HÀNH</div>
+    <button class="tbtn" id="btnSound" title="Âm thanh">🔊</button>
+    <button class="tbtn" id="btnFx" title="Hiệu ứng">✨</button>
+    <button class="tbtn" id="btnEditor">📝 Câu hỏi</button>
+    <button class="tbtn" id="btnFull" title="Toàn màn hình">⛶</button>
+  </header>
+
+  <div class="stage">
+    <main class="main" id="mainArea">
+      <section id="mapView">
+        <div class="map-head">
+          <h2>🧭 BẢN ĐỒ KHO BÁU</h2>
+          <div class="legend">
+            <span>📦 Rương thường</span>
+            <span>🏆 Rương vàng</span>
+            <span>🎁 Rương bí mật</span>
+            <span>🗝️ Chìa khóa</span>
+            <span>💀 Bẫy</span>
+            <span>⚔️ Tranh đoạt</span>
+            <span>💎 Kho báu lớn</span>
+          </div>
+        </div>
+        <div class="map-wrap" id="mapWrap"></div>
+        <div class="zone-note" id="zoneNote"></div>
+      </section>
+
+      <section id="startView" class="hidden">
+        <div class="hero">
+          <h1>🗺️ TRUY TÌM KHO BÁU LỊCH SỬ</h1>
+          <p>Hành trình 25 địa điểm · 5 vùng đất · 5 đội chơi · 1 kho báu vĩ đại</p>
+        </div>
+        <div class="team-setup" id="teamSetup"></div>
+        <div class="rulebox">
+          <b>⚖️ LUẬT CHƠI</b>
+          <ul>
+            <li>Mỗi đội khởi hành với <b>500 điểm</b>. Thứ tự chơi do MC chọn.</li>
+            <li>Phải khám phá <b>tuần tự</b>: mở hết 5 ô Vùng N mới mở được Vùng N+1.</li>
+            <li>Trả lời đúng câu hỏi trắc nghiệm → được <b>mở rương</b> nhận thưởng.</li>
+            <li>Trả lời sai → không nhận thưởng; với ô bẫy sẽ bị trừ điểm.</li>
+            <li>Thu đủ <b>3 chìa khóa 🗝️</b> để đủ điều kiện mở <b>Kho báu cuối 💎</b>.</li>
+            <li>Kho báu cuối: trả lời đúng câu hỏi khó → <b>+1000 điểm</b>. Sai thì chỉ mất lượt.</li>
+            <li>Mỗi đội giữ tối đa <b>3 vật phẩm</b>. Dùng vật phẩm phải được MC xác nhận.</li>
+            <li>Cơ chế <b>cướp điểm</b> chỉ lấy tối đa 100 điểm/lần. Không đội nào bị loại.</li>
+          </ul>
+          <b>🏝️ ĐẶC BIỆT: HÒN ĐẢO THẤT LẠC (Vùng 4)</b>
+          <ul>
+            <li>Vùng 4 là "đảo hải tặc" – <b>3 rương vàng</b> + 1 rương bí mật + 1 ô tranh đoạt.</li>
+            <li>Điểm câu hỏi tại Vùng 4 được nhân <b>×1.3</b>.</li>
+            <li>Phần thưởng rương tại Vùng 4 được nhân <b>×1.5</b>.</li>
+            <li>Vùng 5 (Kho báu cuối) nhân điểm câu hỏi <b>×1.5</b>.</li>
+          </ul>
+          <b>🎁 XÁC SUẤT PHẦN THƯỞNG</b>
+          <ul>
+            <li><b>Rương thường:</b> 100đ (40%) · 200đ (25%) · 300đ (15%) · 🗝️ (10%) · 🎁 (10%)</li>
+            <li><b>Rương vàng:</b> 300đ (30%) · 500đ (20%) · ×2 điểm (15%) · 🗝️ (15%) · 🎁 (10%) · 🗺️ (10%)</li>
+            <li><b>Rương bí mật:</b> 🎁 (45%) · 🗝️ (25%) · 400đ (20%) · ⛏️ mở thêm 1 ô (10%)</li>
+            <li><b>Bẫy:</b> −50đ (40%) · −100đ (30%) · mất 1 🗝️ (20%) · thoát nạn (10%)</li>
+          </ul>
+        </div>
+      </section>
+
+      <section id="endView" class="hidden"></section>
+    </main>
+
+    <aside class="side">
+      <div class="card">
+        <h3>👥 Bảng xếp hạng</h3>
+        <div id="leaderboard"></div>
+      </div>
+
+      <div class="card">
+        <h3>🎒 Túi đồ đội đang chơi</h3>
+        <div id="bagArea"></div>
+      </div>
+
+      <div class="card">
+        <h3>⚙️ Điều khiển MC</h3>
+        <div class="note" style="margin-bottom:8px">
+          Đội hiện tại: <b id="curTeamName" style="color:var(--gold)">—</b>
+        </div>
+        <div class="row">
+          <button class="btn sm" id="btnPrevTeam">◀ Đội trước</button>
+          <button class="btn sm" id="btnNextTeam">Đội sau ▶</button>
+        </div>
+        <div class="row" style="margin-top:6px">
+          <button class="btn sm green" id="btnExtra">⛏️ Lượt thêm</button>
+          <button class="btn sm blue" id="btnBonus">🌟 Nhiệm vụ phụ</button>
+        </div>
+        <div class="note" style="margin-top:9px">Điểm thủ công</div>
+        <div class="row" style="flex-wrap:wrap;margin-top:5px">
+          <button class="btn sm" data-adj="50">+50</button>
+          <button class="btn sm" data-adj="100">+100</button>
+          <button class="btn sm" data-adj="-50">−50</button>
+          <button class="btn sm" data-adj="-100">−100</button>
+          <button class="btn sm" data-adj="key">🗝️ +1</button>
+          <button class="btn sm" data-adj="-key">🗝️ −1</button>
+        </div>
+      </div>
+    </aside>
+  </div>
+
+  <footer class="bottombar">
+    <button class="btn gold" id="btnStart">🚀 BẮT ĐẦU GAME</button>
+    <button class="btn" id="btnTurn">🔄 Chuyển lượt</button>
+    <button class="btn" id="btnUndo">↩️ Quay lại</button>
+    <div class="sep"></div>
+    <button class="btn green" id="btnFinalPhase">💎 Kho báu cuối</button>
+    <button class="btn red" id="btnEndGame">🏁 Kết thúc</button>
+    <div class="sep"></div>
+    <button class="btn" id="btnSave">💾 Lưu</button>
+    <button class="btn" id="btnReset">🗑️ Chơi lại</button>
+    <div class="spacer"></div>
+    <span class="note" id="statusNote">Sẵn sàng khởi hành…</span>
+  </footer>
+</div>
+
+<div class="overlay" id="ovQuestion">
+  <div class="modal wide">
+    <div class="q-head">
+      <span class="tag topic" id="qTopic">Chủ đề</span>
+      <span class="tag easy" id="qDiff">Dễ</span>
+      <span class="tag pts" id="qPts">+100 điểm</span>
+      <span class="tag zone" id="qZone" style="display:none">×1.0</span>
+      <div class="spacer"></div>
+      <span class="tag topic" id="qTeam">Đội</span>
+      <span class="tag topic" id="qLoc">Địa điểm</span>
+    </div>
+    <div class="q-text" id="qText">—</div>
+    <div class="opts" id="qOpts"></div>
+    <div class="explain" id="qExplain"></div>
+    <div class="row" style="margin-top:18px;align-items:center">
+      <button class="btn blue" id="btnSecretMap">🗺️ Đổi địa điểm</button>
+      <div class="spacer"></div>
+      <button class="btn" id="btnSkipQ">⏭️ Bỏ qua</button>
+      <button class="btn gold" id="btnConfirmAns" disabled>✅ XÁC NHẬN</button>
+      <button class="btn green hidden" id="btnContinueQ">➡️ TIẾP TỤC</button>
+    </div>
+  </div>
+</div>
+
+<div class="overlay" id="ovReward">
+  <div class="modal" style="max-width:660px">
+    <div class="reward-box" id="rewardBox"></div>
+    <div class="center" style="margin-top:18px">
+      <button class="btn gold" id="btnCloseReward">✔️ ĐÓNG & TIẾP TỤC</button>
+    </div>
+  </div>
+</div>
+
+<div class="overlay" id="ovSteal">
+  <div class="modal" style="max-width:720px">
+    <h2 class="title">⚔️ THÁCH ĐẤU TRANH ĐOẠT</h2>
+    <p class="note center" id="stealDesc"></p>
+    <div id="stealList" class="steal-list"></div>
+    <div class="center" style="margin-top:14px">
+      <button class="btn" id="btnCancelSteal">Bỏ qua cướp điểm</button>
+    </div>
+  </div>
+</div>
+
+<div class="overlay" id="ovEditor">
+  <div class="modal wide">
+    <h2 class="title">📝 NGÂN HÀNG CÂU HỎI</h2>
+    <div class="editor-tools">
+      <button class="btn sm green" id="btnAddQ">➕ Thêm</button>
+      <button class="btn sm" id="btnExportQ">⬇️ Xuất JSON</button>
+      <button class="btn sm" id="btnImportQ">⬆️ Nhập JSON</button>
+      <button class="btn sm" id="btnRestoreQ">♻️ Mặc định</button>
+      <button class="btn sm red" id="btnDelAllQ">🗑️ Xóa tất cả</button>
+      <div class="spacer"></div>
+      <span class="note" id="qCount">0 câu hỏi</span>
+    </div>
+    <div class="qlist" id="qList"></div>
+
+    <div id="qForm" style="margin-top:16px;display:none">
+      <div class="grid2">
+        <div class="field"><label>Câu hỏi</label><input id="fQ" placeholder="Nội dung câu hỏi…"></div>
+        <div class="field"><label>Chủ đề</label><input id="fTopic" placeholder="VD: Thành lập Đảng"></div>
+      </div>
+      <div class="grid4">
+        <div class="field"><label>Đáp án A</label><input id="fA"></div>
+        <div class="field"><label>Đáp án B</label><input id="fB"></div>
+        <div class="field"><label>Đáp án C</label><input id="fC"></div>
+        <div class="field"><label>Đáp án D</label><input id="fD"></div>
+      </div>
+      <div class="grid4">
+        <div class="field"><label>Đáp án đúng</label>
+          <select id="fAns">
+            <option value="0">A</option><option value="1">B</option>
+            <option value="2">C</option><option value="3">D</option>
+          </select>
+        </div>
+        <div class="field"><label>Độ khó</label>
+          <select id="fDiff">
+            <option value="easy">Dễ</option>
+            <option value="mid">Trung bình</option>
+            <option value="hard">Khó</option>
+          </select>
+        </div>
+        <div class="field"><label>Điểm thưởng</label>
+          <input id="fPts" type="number" value="100" min="0">
+        </div>
+        <div class="field"><label>&nbsp;</label>
+          <div class="row">
+            <button class="btn sm gold" id="btnSaveQ" style="flex:1">💾 Lưu</button>
+            <button class="btn sm" id="btnCancelQ" style="flex:1">Hủy</button>
+          </div>
+        </div>
+      </div>
+      <div class="field"><label>Giải thích</label>
+        <input id="fExp" placeholder="Giải thích ngắn gọn…">
+      </div>
+    </div>
+
+    <textarea id="jsonArea" placeholder="Dán JSON bộ câu hỏi vào đây rồi bấm NHẬP JSON…" style="display:none"></textarea>
+
+    <div class="right" style="margin-top:16px">
+      <button class="btn gold" id="btnCloseEditor">✔️ ĐÓNG</button>
+    </div>
+  </div>
+</div>
+
+<div class="overlay" id="ovConfirm">
+  <div class="modal" style="max-width:560px">
+    <h2 class="title" id="cfTitle">Xác nhận</h2>
+    <p class="note" style="font-size:16px" id="cfText"></p>
+    <div class="row right" style="margin-top:16px">
+      <button class="btn" id="cfNo">Hủy</button>
+      <button class="btn gold" id="cfYes">Đồng ý</button>
+    </div>
+  </div>
+</div>
+
+<div id="toast"></div>
+<div id="confetti"></div>
+
+<script src="script.js"></script>
+</body>
+</html>
