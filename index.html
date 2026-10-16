@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ĐƯỜNG ĐUA LỊCH SỬ – HISTORY GRAND PRIX</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="app">
+
+  <!-- HEADER -->
+  <header class="top">
+    <div class="brand">
+      <div class="flag">🏁</div>
+      <div>
+        <h1>ĐƯỜNG ĐUA <span>LỊCH SỬ</span></h1>
+        <p>HISTORY GRAND PRIX • Lịch sử Đảng Cộng sản Việt Nam</p>
+      </div>
+    </div>
+    <div class="status-pill">
+      <div class="pill">🎯 Đích: Ô <b>30</b></div>
+      <div class="pill">👥 Đội: <b id="statTeams">5</b></div>
+      <div class="pill">📚 Câu đã dùng: <b id="statUsed">0</b>/50</div>
+      <div class="pill" id="statRace">⏱️ Đang đua</div>
+    </div>
+  </header>
+
+  <div class="grid-main">
+    <!-- LEFT -->
+    <div class="grid-left">
+
+      <!-- BOARD -->
+      <section class="panel">
+        <h2>🗺️ Bàn đua <span class="tag">Từ xuất phát (0) đến đích (30)</span></h2>
+        <div class="board-wrap">
+          <div class="board" id="board"></div>
+        </div>
+        <div class="legend">
+          <span class="badge">🏁 Xuất phát</span>
+          <span class="badge">🏆 Đích</span>
+          <span class="badge">💰 Thưởng điểm</span>
+          <span class="badge">🚀 Tăng tốc</span>
+          <span class="badge">⛔ Chướng ngại</span>
+          <span class="badge">🍀 May mắn</span>
+          <span class="badge">🔮 Bùa phép</span>
+        </div>
+      </section>
+
+      <!-- TEAMS -->
+      <section class="panel">
+        <h2>👥 Các đội <span class="tag">Nhấn vào thẻ đội để chọn</span></h2>
+        <div class="teams" id="teams"></div>
+      </section>
+
+      <!-- QUESTION -->
+      <section class="panel">
+        <h2>❓ Câu hỏi <span class="tag" id="qTeamTag">Chưa chọn đội</span></h2>
+        <div class="qbox">
+          <div class="qmeta">
+            <span class="badge" id="qIndexTag">Câu: —/10</span>
+            <span class="badge" id="qDiceTag">🎟️ Vé gieo: 0</span>
+            <span class="badge" id="qScoreTag">⭐ Điểm: 0</span>
+            <span class="badge" id="qPosTag">📍 Vị trí: 0</span>
+          </div>
+          <div class="qtext" id="qText">Hãy chọn một đội, sau đó nhấn “Mở câu hỏi” để bắt đầu.</div>
+          <div class="qanswer" id="qAnswer"></div>
+          <div class="qactions">
+            <button id="btnOpenQ">📖 Mở câu hỏi</button>
+            <button id="btnShowA" class="ghost" disabled>👁️ Hiện đáp án</button>
+            <button id="btnCorrect" disabled>✅ Trả lời đúng</button>
+            <button id="btnWrong" disabled>❌ Trả lời sai</button>
+            <button id="btnSkip" class="ghost" disabled>⏭️ Bỏ qua</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- DICE & SPELLS -->
+      <section class="panel">
+        <h2>🎲 Xúc xắc & Bùa phép</h2>
+        <div class="dice-row">
+          <div class="dice" id="dice">?</div>
+          <div class="dice-side">
+            <div class="dice-actions">
+              <button id="btnRoll">🎲 Gieo xúc xắc</button>
+              <span class="badge" id="diceInfo">Chọn đội để gieo</span>
+            </div>
+            <div class="spells" id="spells"></div>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <!-- RIGHT -->
+    <aside class="side-col">
+      <section class="panel">
+        <h2>🏆 Bảng xếp hạng</h2>
+        <div id="leaderboard"></div>
+      </section>
+      <section class="panel">
+        <h2>📜 Nhật ký diễn biến</h2>
+        <div class="log" id="log"></div>
+      </section>
+    </aside>
+  </div>
+
+  <!-- MC BAR -->
+  <div class="mc-bar">
+    <div class="group">
+      <button id="btnEditor" class="ghost">✏️ Chỉnh sửa câu hỏi</button>
+      <button id="btnImport" class="ghost">📥 Nhập JSON</button>
+      <button id="btnExport" class="ghost">📤 Xuất JSON</button>
+      <button id="btnReset" class="danger">🔄 Chơi lại</button>
+      <button id="btnClear" class="danger">🗑️ Xóa tiến trình</button>
+    </div>
+    <div class="group">
+      <span class="badge" id="saveTag">💾 Đã lưu</span>
+    </div>
+  </div>
+  <p class="hint">Bộ câu hỏi mẫu là tài liệu tham khảo – MC vui lòng kiểm tra lại trước khi sử dụng trên lớp. Toàn bộ dữ liệu được lưu trong trình duyệt (localStorage).</p>
+</div>
+
+<!-- MODAL EDITOR -->
+<div class="modal-backdrop" id="editorModal">
+  <div class="modal">
+    <h2>✏️ Trình chỉnh sửa bộ câu hỏi</h2>
+    <div class="row">
+      <div>
+        <label>Chọn đội</label>
+        <select id="edTeam"></select>
+      </div>
+      <div>
+        <label>Chọn câu (1–10)</label>
+        <select id="edIndex"></select>
+      </div>
+    </div>
+    <div class="field">
+      <label>Nội dung câu hỏi</label>
+      <textarea id="edQuestion" rows="3"></textarea>
+    </div>
+    <div class="field">
+      <label>Đáp án tham khảo cho MC</label>
+      <textarea id="edAnswer" rows="3"></textarea>
+    </div>
+    <div class="modal-actions">
+      <button class="ghost small" id="edPrev">⏮️ Câu trước</button>
+      <button class="ghost small" id="edNext">⏭️ Câu tiếp</button>
+      <button id="edSave">💾 Lưu thay đổi</button>
+      <button class="ghost" id="edClose">Đóng</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL IMPORT -->
+<div class="modal-backdrop" id="importModal">
+  <div class="modal">
+    <h2>📥 Nhập bộ câu hỏi từ JSON</h2>
+    <p class="note">
+      Cấu trúc: <code>{"questions":[[{"question":"...","answer":"..."}]]}</code> – đúng 5 nhóm, mỗi nhóm 10 câu.
+    </p>
+    <textarea id="importText" rows="10" placeholder='{"questions":[[{"question":"...","answer":"..."}]]}'></textarea>
+    <div class="modal-actions">
+      <button id="importDo">📥 Nhập dữ liệu</button>
+      <button class="ghost" id="importClose">Đóng</button>
+    </div>
+  </div>
+</div>
+
+<!-- WINNER -->
+<div class="modal-backdrop" id="winnerModal">
+  <div class="modal winner-modal">
+    <div class="trophy">🏆</div>
+    <h2>NHÀ VÔ ĐỊCH</h2>
+    <div class="winner-name" id="winnerName">—</div>
+    <p class="note" id="winnerSub">Đã chạm ô 30 và giành chiến thắng!</p>
+    <div class="modal-actions center">
+      <button id="winnerLB" class="ghost">📊 Xem bảng xếp hạng</button>
+      <button id="winnerReplay">🔄 Chơi lại</button>
+    </div>
+  </div>
+</div>
+
+<div class="flash-msg" id="flash"></div>
+<div class="confetti" id="confetti"></div>
+
+<script src="script.js"></script>
+</body>
+</html>
